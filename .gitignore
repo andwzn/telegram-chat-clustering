@@ -1,6 +1,6 @@
 # data
-data/dbs
-data/csv
+data/dbs/*
+data/csv/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
