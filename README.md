@@ -1,10 +1,20 @@
-# telegram-chat-clustering
+# Telegram Chat Clustering
 
-# Quickstart 
+## Quickstart
 
-## Add the datasets
-Due to privacy concerns, the data is not provided in this repository. 
-If the data is provided as sqlite-dbs created by he telegram data-collection and analysis suit TeleVision, it should be added to the `data/dbs` directory. If it's already in the csv-values, it can be added to `data/csv`
+### Adding the Datasets
+Due to privacy concerns, the datasets are not included in this repository. You can add the datasets in the following ways:
+1. **SQLite Databases**: If the data is provided as SQLite databases created by the Telegram data-collection and analysis suite TeleVision, place these databases in the `data/dbs` directory.
+2. **CSV Files**: If the data is already in CSV format, place these files in the `data/csv` directory.
 
-## Covert the dataset to csv
-By running `python3 -m util.export_msg_from_db` from the root directory of the project, all available sqlite-dbs can be converted into csv-files. This only works for databases created using TeleVision and might take a while.
+### Converting the Dataset to CSV
+To convert all available SQLite databases in the `data/dbs` directory into CSV files, follow these steps:
+
+1. Open a terminal or command prompt.
+2. Navigate to the root directory of the project.
+3. Run the following command:
+    ```sh
+    python3 -m util.export_msg_from_db
+    ```
+
+Please note that this process might take some time depending on the size of the databases. It also only works with dbs created using TeleVision.
