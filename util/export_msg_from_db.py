@@ -9,7 +9,6 @@ from datetime import datetime
 from typing import Dict, List, Optional, TypedDict, Tuple
 from sqlalchemy.engine.row import Row
 
-
 def main() -> None:
     """
     Export messages from a SQLite database to a CSV file.
@@ -38,7 +37,7 @@ def main() -> None:
                 # Get all messages
                 msgs = getMessagesFromDB(session)
 
-            # Export messages as csv‚
+            # Export messages as csv
             msgs_csv = dictsToCsv(rowsToDicts(msgs))
             with open(csv_file, 'w') as f:
                 f.write(msgs_csv)
@@ -168,6 +167,8 @@ def getMessagesFromDB(
                 Chat.external_id.label("telegram_chat_id"),
                 ChatVersion.chat_name.label("chat_name"),
                 Chat.username.label("chat_handle"),
+                ChatVersion.chat_type.label("chat_type"),
+                ChatVersion.is_private.label("chat_private"),
                 case(
                     (Message.fwd_date != None, True),
                     else_=False
@@ -268,6 +269,8 @@ class MessageDict(TypedDict):
     telegram_chat_id: int
     chat_name: Optional[str]
     chat_handle: Optional[str]
+    chat_type: str
+    chat_private: bool
     is_fwd: bool
     fwd_from_chat_handle: Optional[str]
     fwd_from_user_name: Optional[str]
