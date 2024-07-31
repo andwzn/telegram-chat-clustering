@@ -168,7 +168,6 @@ def getMessagesFromDB(
                 ChatVersion.chat_name.label("chat_name"),
                 Chat.username.label("chat_handle"),
                 ChatVersion.chat_type.label("chat_type"),
-                ChatVersion.is_private.label("chat_private"),
                 case(
                     (Message.fwd_date != None, True),
                     else_=False
