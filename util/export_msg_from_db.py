@@ -173,6 +173,7 @@ def getMessagesFromDB(
                     else_=False
                 ).label('is_fwd'),
                 source_chat.username.label("fwd_from_chat_handle"),
+                source_chat.external_id.label("fwd_from_chat_id"),
                 source_user.first_name.label("fwd_from_user_name"),
                 case(
                         (Message.reply_to_id != None, True),
