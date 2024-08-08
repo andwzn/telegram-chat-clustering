@@ -12,8 +12,10 @@ bleach @ file:///home/conda/feedstock_root/build_artifacts/bleach_1696630167146/
 Bottleneck @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_e7wwl52wn1/croot/bottleneck_1709075893359/work
 cached-property @ file:///home/conda/feedstock_root/build_artifacts/cached_property_1615209429212/work
 calmap==0.0.11
-certifi @ file:///home/conda/feedstock_root/build_artifacts/certifi_1720457958366/work/certifi
+calplot==0.1.7.5
+certifi @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_70oty9s9jh/croot/certifi_1720453497032/work/certifi
 cffi @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_7a9c7wyorr/croot/cffi_1714483157752/work
+chardet @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/chardet_1699244713642/work
 charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1698833585322/work
 comm @ file:///home/conda/feedstock_root/build_artifacts/comm_1710320294760/work
 contourpy @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/contourpy_1701814001737/work
@@ -25,6 +27,7 @@ entrypoints @ file:///home/conda/feedstock_root/build_artifacts/entrypoints_1643
 exceptiongroup @ file:///home/conda/feedstock_root/build_artifacts/exceptiongroup_1720869315914/work
 executing @ file:///home/conda/feedstock_root/build_artifacts/executing_1698579936712/work
 fastjsonschema @ file:///home/conda/feedstock_root/build_artifacts/python-fastjsonschema_1718477020893/work/dist
+fasttext==0.9.3
 fonttools @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_60c8ux4mkl/croot/fonttools_1713551354374/work
 fqdn @ file:///home/conda/feedstock_root/build_artifacts/fqdn_1638810296540/work/dist
 greenlet @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_516imz09pb/croot/greenlet_1702059966336/work
@@ -84,6 +87,7 @@ prompt_toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolki
 psutil @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/psutil_1699248249804/work
 ptyprocess @ file:///home/conda/feedstock_root/build_artifacts/ptyprocess_1609419310487/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
 pure_eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1721585709575/work
+pybind11==2.13.1
 pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1711811537435/work
 Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1714846767233/work
 pyparsing @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/pyparsing_1699239441347/work
