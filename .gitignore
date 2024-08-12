@@ -2,6 +2,7 @@
 data/dbs/*
 data/csv/*
 data/models/*
+features/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
