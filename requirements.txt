@@ -45,6 +45,7 @@ ipython @ file:///home/conda/feedstock_root/build_artifacts/ipython_171958252626
 isoduration @ file:///home/conda/feedstock_root/build_artifacts/isoduration_1638811571363/work/dist
 jedi @ file:///home/conda/feedstock_root/build_artifacts/jedi_1696326070614/work
 Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1715127149914/work
+joblib==1.4.2
 json5 @ file:///home/conda/feedstock_root/build_artifacts/json5_1712986206667/work
 jsonpointer==2.0
 jsonschema @ file:///home/conda/feedstock_root/build_artifacts/jsonschema_1720529478715/work
@@ -102,6 +103,8 @@ requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1717057054
 rfc3339-validator @ file:///home/conda/feedstock_root/build_artifacts/rfc3339-validator_1638811747357/work
 rfc3986-validator @ file:///home/conda/feedstock_root/build_artifacts/rfc3986-validator_1598024191506/work
 rpds-py @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/rpds-py_1699262599461/work
+scikit-learn==1.5.1
+scikit-learn-extra==0.3.0
 scipy==1.14.0
 seaborn @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_f3_ueh70ud/croot/seaborn_1718302932585/work
 Send2Trash @ file:///home/conda/feedstock_root/build_artifacts/send2trash_1628511208346/work
@@ -112,6 +115,7 @@ soupsieve @ file:///home/conda/feedstock_root/build_artifacts/soupsieve_16939292
 SQLAlchemy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_2cq7wud7iy/croot/sqlalchemy_1718378182237/work
 stack-data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1669632077133/work
 terminado @ file:///Users/runner/miniforge3/conda-bld/terminado_1710263781917/work
+threadpoolctl==3.5.0
 tinycss2 @ file:///home/conda/feedstock_root/build_artifacts/tinycss2_1713974937325/work
 tomli @ file:///home/conda/feedstock_root/build_artifacts/tomli_1644342247877/work
 tornado @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a4w03z48br/croot/tornado_1718740114858/work
