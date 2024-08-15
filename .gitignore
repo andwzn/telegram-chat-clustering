@@ -4,6 +4,12 @@ data/csv/*
 data/models/*
 features/*
 
+# sensitive data
+top_duplicate_chats.txt
+
+# internal stuff
+TODO
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
