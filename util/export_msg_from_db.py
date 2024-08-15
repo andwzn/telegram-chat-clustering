@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 import glob
-from data.dbs.schema import Chat, Message, MessageVersion, ChatVersion, UserVersion, User, Webpage
+from data.auxiliary.schema import Chat, Message, MessageVersion, ChatVersion, UserVersion, User, Webpage
 from sqlalchemy.orm import aliased, Session as DBSession, Session, sessionmaker
 from sqlalchemy import Subquery, and_, func, Row, case, create_engine
 from datetime import datetime
@@ -146,6 +146,7 @@ def getMessagesFromDB(
         messages = (
             session.query(
                 Message.external_id.label('telegram_message_id'),
+                Message.id.label('television_message_id'),
                 MessageVersion.normalized_text.label('message_text'),
                 Message.date.label("message_date"),
                 MessageVersion.reactions.label('message_reactions'),
@@ -175,6 +176,7 @@ def getMessagesFromDB(
                 source_chat.username.label("fwd_from_chat_handle"),
                 source_chat.external_id.label("fwd_from_chat_id"),
                 source_user.first_name.label("fwd_from_user_name"),
+                Message.original_message_id.label("television_original_message_id"),
                 case(
                         (Message.reply_to_id != None, True),
                         (Message.reply_to_top_id != None, True),
