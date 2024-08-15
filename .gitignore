@@ -1,10 +1,8 @@
-# data
+# sensitive data
 data/dbs/*
 data/csv/*
 data/models/*
 features/*
-
-# sensitive data
 top_duplicate_chats.txt
 
 # internal stuff
