@@ -8,6 +8,9 @@ top_duplicate_chats.txt
 # internal stuff
 TODO
 
+#WIP
+03_data_cleaning_and_exploration_multiple_dfs.ipynb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
