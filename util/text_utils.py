@@ -43,4 +43,4 @@ def is_emoji_or_punctuation_only(input_string: str) -> bool:
 
 
 def count_words(text):
-    return len(text().split())
+    return len(text.split())
