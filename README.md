@@ -38,10 +38,20 @@ The experiment itself is structured into two parts:
     cd <project-directory>
     ```
 
-3. **Install the necessary dependencies**:
+3. **Install the necessary dependencies for each notebook**:
+    
+    For 01_data_cleaning_and_exploration.ipynb:
     ```bash
     pip install -r requirements.txt
     ```
+
+    For 02_feature_engineering_and_clustering.ipynb:
+    ```bash
+    pip install -r requirements_2.txt
+    ```    
+
+    Using Python 3.12.4 and seperate environments for each notebook is recommended.
+
 
 4. **Add the data:**
     Add datasets (either as csv or sqlite-db) to their respective directories (see below)
