@@ -20,7 +20,7 @@ def char_is_emoji(character: str) -> bool:
                   ('\U00002702' <= character <= '\U000027B0') or \
                   ('\U000024C2' <= character <= '\U0001F251')
 
-    return emoji_range or character in ['\uFE0E', '\uFE0F'] or emoji.is_emoji(character)
+    return emoji_range or character in ['\uFE0E', '\uFE0F'] or emoji.is_emoji(character) #\uFE0E', '\uFE0F force text- or emoji-display  
 
 def is_punctuation(character: str) -> bool:
     """
@@ -40,3 +40,7 @@ def is_emoji_or_punctuation_only(input_string: str) -> bool:
         if not (char_is_emoji(c) or is_punctuation(c) or c==' '):
             return False
     return True
+
+
+def count_words(text):
+    return len(text().split())
