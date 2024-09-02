@@ -1,2 +1,4 @@
 pandas==2.2.2
 seaborn==0.13.2
+sentence_transformers == 3.0.1
+joblib == 1.4.2
