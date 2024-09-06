@@ -2,6 +2,7 @@
 data/dbs/*
 data/csv/*
 data/models/*
+data/preprocessed/*
 features/*
 top_duplicate_chats.txt
 
