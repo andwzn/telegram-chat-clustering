@@ -5,6 +5,7 @@ data/models/*
 data/preprocessed/*
 features/*
 top_duplicate_chats.txt
+tmp/*
 
 # internal stuff
 TODO
