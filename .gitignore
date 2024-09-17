@@ -6,6 +6,7 @@ data/preprocessed/*
 features/*
 top_duplicate_chats.txt
 tmp/*
+auxiliary/*
 
 # internal stuff
 TODO
