@@ -12,6 +12,7 @@ from typing import Optional, Tuple, Dict, Union, List
 from sklearn.metrics.pairwise import cosine_similarity
 from bertopic.representation import KeyBERTInspired
 from sentence_transformers import SentenceTransformer
+import json
 
 
 def load_emoji_list(file_paths: list[str]) -> list[str]:
@@ -258,6 +259,11 @@ def run_experiment(
         "avg_topic_counts": avg_topic_counts,
         "avg_noise_counts": avg_noise_counts
     }
+    
+    # save the evaluation metrics as json
+    with open(os.path.join(topic_model_dir_path[:-14], f"{feature_name}_evaluation_metrics.json"), "w") as f:
+        json.dump(avg_evaluation_metrics, f, indent=4)
+        
     print_log("run_experiment", "Calculate Average Evaluation Metrics", "Completed ✓")
     
     print_log("run_experiment", "Found Most Average Model", "Calculating")
@@ -630,3 +636,67 @@ def compare_averages(metrics_model_1: Dict[str, float],
     
     else:
         raise ValueError("Both models are equally good based on the evaluated metrics.")
+    
+def is_processed(feature_name: str, webpreview: bool = False) -> bool:
+    """
+    Checks if all necessary output files for a given feature exist.
+
+    Parameters:
+    - feature_name (str): the name of the feature 
+    - webpreview (bool): Optional; if True, includes a check for the 'representative_webpreviews.json' file. Default is False.
+
+    Returns:
+    - bool: True if all required files exist, otherwise False.
+    """
+    dir_path = os.path.join(os.getcwd(), f"../results/{feature_name}_embeddings/")
+    model_path = os.path.join(dir_path, f"topic_models/avg_{feature_name}_topic_model")
+    eval_path = os.path.join(dir_path, f"{feature_name}_evaluation_metrics.json")
+    messages_path = os.path.join(dir_path, "representative_messages.json")
+    
+    print(f"Topic Model exists: {os.path.exists(model_path)}")
+    print(f"Evaluation Metrics exist: {os.path.exists(eval_path)}")
+    print(f"Representative Messages exist: {os.path.exists(messages_path)}")
+    
+    if webpreview:
+        webpreview_path = os.path.join(dir_path, f"representative_webpreviews.json")
+        return all(os.path.exists(path) for path in [model_path, eval_path, messages_path, webpreview_path])
+    else:
+        return all(os.path.exists(path) for path in [model_path, eval_path, messages_path])
+
+def load_data(feature_name: str, webpreview: bool = False) -> Tuple[Dict[str, float], BERTopic, Dict[int, str], Optional[Dict[int, str]]]:
+    """
+    Load the data for a given feature, including the topic model, evaluation metrics, 
+    and representative messages. Optionally, it loads representative web previews.
+
+    Parameters:
+    - feature_name (str): The name of the feature whose data will be loaded.
+    - webpreview (bool): Optional; if True, loads 'representative_webpreviews.json'. Default is False.
+
+    Returns:
+    - tuple: 
+        - evaluation_metrics (dict): The evaluation metrics loaded from the JSON file.
+        - topic_model (BERTopic): The loaded BERTopic model.
+        - representative_messages (dict): The representative messages loaded from the JSON file.
+        - representative_webpreviews (dict or None): The representative web previews (if `webpreview` is True), or None.
+    """    
+    dir_path = os.path.join(os.getcwd(), f"../results/{feature_name}_embeddings/")
+    model_path = os.path.join(dir_path, f"topic_models/avg_{feature_name}_topic_model")
+    eval_path = os.path.join(dir_path, f"{feature_name}_evaluation_metrics.json")
+    messages_path = os.path.join(dir_path, "representative_messages.json")
+    
+    topic_model = BERTopic.load(model_path)
+    
+    with open(eval_path, 'r') as file:
+        evaluation_metrics = json.load(file)
+        
+    with open(messages_path, 'r') as file:
+        representative_messages = json.load(file)
+        
+    if webpreview:
+        webpreview_path = os.path.join(dir_path, f"representative_webpreviews.json")
+        with open(webpreview_path, 'r') as file:
+            representative_webpreviews = json.load(file)
+        return evaluation_metrics, topic_model, representative_messages, representative_webpreviews
+    
+    else:
+        return evaluation_metrics, topic_model, representative_messages, None
