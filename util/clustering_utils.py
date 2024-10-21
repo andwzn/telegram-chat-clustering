@@ -408,7 +408,7 @@ def get_representative_texts(df: pd.DataFrame,
         text_embeddings_column (str): the name of the column containing the text embeddings
         text_preprocessed_column (str): the name of the column containing the preprocessed text data
         add_structural_info (bool): a boolean indicating whether structural vectors of a chat should be added to the message vectors
-        structural_embedding_chat_map(pd.Series): a pd.Series where the index represents chat IDs and values are the combined average message and structural embeddings of the chat
+        structural_embedding_chat_map(pd.Series): a pd.Series where the index represents chat IDs and values are the structural embeddings of the chat
 
     Returns:
         dict: A dictionary where keys are topic IDs and values are Series of the top representative messages for each topic.
