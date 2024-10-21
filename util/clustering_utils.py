@@ -290,6 +290,100 @@ def run_experiment(
     return avg_evaluation_metrics, topics[smallest_diff_idx], propabilities[smallest_diff_idx], avg_model
 
 
+# def get_representative_texts(df: pd.DataFrame, 
+#                              topic_model: BERTopic, 
+#                              topic_vectors: pd.Series, 
+#                              chat_vectors: pd.Series,
+#                              n: int,
+#                              feature_name: str,
+#                              text_column: str,
+#                              text_embeddings_column: str,
+#                              text_preprocessed_column: str) -> Dict[int, List[str]]:
+#     """Retrieve representative text for each topic from the given DataFrame.
+
+#     Parameters:
+#         df (pd.DataFrame): the DataFrame containing message data, including chat IDs and message vectors.
+#         topic_model (BERTopic): the topic model 
+#         topic_vectors (pd.Series): a pd.Series where the index represents topic IDs and values are their corresponding mean vectors.
+#         chat_vectors (pd.Series): the chat representations used in the topic model.
+#         n (int): the number of top representative messages to retrieve for each topic.
+#         feature_name (str): the name of the feature(s) used to create the chat representations
+#         text_column (str): the name of the column containing the text data
+#         text_embeddings_column (str): the name of the column containing the text embeddings
+#         text_preprocessed_column (str): the name of the column containing the preprocessed text data
+
+#     Returns:
+#         dict: A dictionary where keys are topic IDs and values are Series of the top representative messages for each topic.
+#     """    
+    
+#     print_log("get_representative_texts", "Preperation", "Creating Chat/Topic Map")
+    
+#     # create a map with chat ids and their corresponding topics
+#     topics = topic_model.topics_
+#     chat_ids= chat_vectors.index
+#     id_topic_map = pd.Series(topics, index=chat_ids, name='Topic')
+
+#     print_log("get_representative_texts", "Preperation", "Add Topic Assignments to DataFrame")
+#     # add the topic assignment of the base model to the message in the dataframe
+#     df[f"{feature_name}_topic_assignment"] = df["telegram_chat_id"].map(id_topic_map)
+
+#     # check if the number of unique combinations is equal to the number of chat ids (each chat id should have exactly one topic assignment)
+#     unique_combinations = df[["telegram_chat_id", f"{feature_name}_topic_assignment"]].drop_duplicates()
+#     assert unique_combinations.shape[0] == df["telegram_chat_id"].nunique()
+    
+#     print_log("get_representative_texts", "Preperation", "Completed ✓")
+    
+#     top_topic_messages = {}
+
+#     # iterate over all topics (excluding the "Other" topic)
+#     topics = topic_model.get_topic_info()["Topic"]
+#     topics = topics.values[topics.values != -1]
+#     for topic in topics:
+#         print_log("get_representative_texts", "Find Representative Texts", f"Getting Texts for Topic {topic}")
+        
+#         # get all messages sent in groups assigned to a specific topic (excluding empty messages)
+#         topic_messages_filter = (df[f"{feature_name}_topic_assignment"] == topic) & ((df[text_column] != "") | pd.isna(df[text_column]))
+#         topic_msgs = df[topic_messages_filter]
+
+#         # get the topic vector of the topic
+#         topic_vector = topic_vectors[topic]
+
+#         # check if the message vectors and topic vectors have the same dimension
+#         assert topic_msgs.iloc[0]["message_vector"].shape == topic_vector.shape
+        
+#         def calculate_similarity(row: pd.Series, topic_vector: pd.Series, text_embeddings_column: str) -> float:
+#             """
+#             Calculate the cosine similarity between a text vector and a topic vector
+#             Parameters:
+#                 row (pd.Series): the row containing the text vector
+#                 topic_vector (pd.Series): the topic vector
+#                 text_embeddings_column (str): the name of the column containing the text embeddings
+#             Returns:
+#                 float: the cosine similarity between the text vector and the topic vector
+#             """
+#             message_vector = np.array(row[text_embeddings_column]).reshape(1, -1)  
+#             return cosine_similarity(message_vector, topic_vector)[0][0]
+
+#         # reshape the topic vector to fit the specifications of the cosine_similarity function
+#         topic_vector = topic_vector.reshape(1, -1)
+
+#         # calculate the cosine similarity between the message vectors and the topic vector
+#         topic_msgs["similarity"] = topic_msgs.apply(lambda x: calculate_similarity(x, topic_vector, text_embeddings_column), axis=1)
+
+#         # drop duplicates to avoid displaying the same message multiple times. We use the preprocessing column to identify duplicates, as the original message text might contain insignificant differences like whitespaces
+#         topic_msgs = topic_msgs.drop_duplicates(subset=[text_preprocessed_column])
+
+#         # sort the messages by similarity and display the most similar messages
+#         topic_msgs = topic_msgs.sort_values(by="similarity", ascending=False)
+
+#         top_messages = topic_msgs[text_column].head(n)   
+        
+#         top_topic_messages[topic] = list(top_messages.values)
+        
+#         print_log("get_representative_texts", "Find Representative Texts", f"Completed ✓")
+        
+#     return top_topic_messages
+
 def get_representative_texts(df: pd.DataFrame, 
                              topic_model: BERTopic, 
                              topic_vectors: pd.Series, 
@@ -298,7 +392,9 @@ def get_representative_texts(df: pd.DataFrame,
                              feature_name: str,
                              text_column: str,
                              text_embeddings_column: str,
-                             text_preprocessed_column: str) -> Dict[int, List[str]]:
+                             text_preprocessed_column: str,
+                             add_structural_info: bool = False,
+                             structural_embedding_chat_map: pd.Series = None) -> Dict[int, List[str]]:
     """Retrieve representative text for each topic from the given DataFrame.
 
     Parameters:
@@ -311,6 +407,8 @@ def get_representative_texts(df: pd.DataFrame,
         text_column (str): the name of the column containing the text data
         text_embeddings_column (str): the name of the column containing the text embeddings
         text_preprocessed_column (str): the name of the column containing the preprocessed text data
+        add_structural_info (bool): a boolean indicating whether structural vectors of a chat should be added to the message vectors
+        structural_embedding_chat_map(pd.Series): a pd.Series where the index represents chat IDs and values are the combined average message and structural embeddings of the chat
 
     Returns:
         dict: A dictionary where keys are topic IDs and values are Series of the top representative messages for each topic.
@@ -347,9 +445,6 @@ def get_representative_texts(df: pd.DataFrame,
 
         # get the topic vector of the topic
         topic_vector = topic_vectors[topic]
-
-        # check if the message vectors and topic vectors have the same dimension
-        assert topic_msgs.iloc[0]["message_vector"].shape == topic_vector.shape
         
         def calculate_similarity(row: pd.Series, topic_vector: pd.Series, text_embeddings_column: str) -> float:
             """
@@ -362,13 +457,39 @@ def get_representative_texts(df: pd.DataFrame,
                 float: the cosine similarity between the text vector and the topic vector
             """
             message_vector = np.array(row[text_embeddings_column]).reshape(1, -1)  
-            return cosine_similarity(message_vector, topic_vector)[0][0]
+            return cosine_similarity(message_vector, topic_vector)[0][0]               
+        
+        def calculate_similarity_with_structural_info(row: pd.Series, 
+                                 topic_vector: pd.Series, 
+                                 text_embeddings_column: str,
+                                 structural_embedding_chat_map: pd.Series) -> float:
+            """
+            Calculate the cosine similarity between a text vector and a topic vector
+            Parameters:
+                row (pd.Series): the row containing the text vector
+                topic_vector (pd.Series): the topic vector
+                text_embeddings_column (str): the name of the column containing the text embeddings
+                structural_embedding_chat_map(pd.Series): a pd.Series where the index represents chat IDs and values are the combined average message and structural embeddings of the chat        
+            Returns:
+                float: the cosine similarity between the text vector and the topic vector
+            """
+            structural_part = structural_embedding_chat_map.get(row["telegram_chat_id"]) # get the structural embedding of the messages chat
+            message_vector = np.concatenate([row["message_vector"], structural_part]) # add the structural embedding of the chat to the message 
+            message_vector = message_vector.reshape(1, -1) # reshape the message vector to fit the specifications of the cosine_similarity function
+            assert message_vector.shape[1] == topic_vector.shape[1] # check if the combined structural message vector has the same shape as the topic vector
+            return cosine_similarity(message_vector, topic_vector)[0][0]  
 
         # reshape the topic vector to fit the specifications of the cosine_similarity function
         topic_vector = topic_vector.reshape(1, -1)
 
         # calculate the cosine similarity between the message vectors and the topic vector
-        topic_msgs["similarity"] = topic_msgs.apply(lambda x: calculate_similarity(x, topic_vector, text_embeddings_column), axis=1)
+        if add_structural_info:
+            topic_msgs["similarity"] = topic_msgs.apply(lambda x: calculate_similarity_with_structural_info(x, topic_vector, text_embeddings_column, structural_embedding_chat_map), axis=1)
+            print_log("calculate_similarity_with_structural_info", "Add Structural Information to Message Embeddings & Compare to Topic Vector", f"Completed ✓")
+        else:
+            print("Here 2")
+            topic_msgs["similarity"] = topic_msgs.apply(lambda x: calculate_similarity(x, topic_vector, text_embeddings_column), axis=1)
+            print_log("calculate_similarity_with_structural_info", "Compare Message Vectors to Topic Vector", f"Completed ✓")
 
         # drop duplicates to avoid displaying the same message multiple times. We use the preprocessing column to identify duplicates, as the original message text might contain insignificant differences like whitespaces
         topic_msgs = topic_msgs.drop_duplicates(subset=[text_preprocessed_column])
@@ -440,3 +561,72 @@ def create_topic_vectors(topic_model: BERTopic, chat_vectors: pd.Series) -> pd.S
     topic_vectors = pd.Series(topic_vectors, name="Mean_Vector")
     
     return topic_vectors
+
+def compare_averages(metrics_model_1: Dict[str, float],
+                     topics_model_1: List[int], 
+                     propabilities_model_1: List[float], 
+                     model_1: BERTopic, 
+                     vectors_1: pd.Series,
+                     metrics_model_2: Dict[str, float],
+                     topics_model_2: List[int],
+                     propabilities_model_2: List[float],
+                     model_2: BERTopic,
+                     vectors_2: pd.Series) -> tuple[List[int], List[float], BERTopic, Dict[str, float], pd.Series]:
+    """Compare two BERTopic models based on evaluation metrics and select the one with more favourable evaluation scores.
+
+    Args:
+        metrics_model_1 (Dict[str, float]): A dictionary containing the evaluation metrics (Coherence Score, Silhouette Score, Davies-Bouldin Score, etc.) for the first model.
+        topics_model_1 (List[int]): A list of topic assignments for the documents in the first model.
+        propabilities_model_1 (List[float]): A list of probabilities associated with the topics for the first model.
+        model_1 (BERTopic): The first BERTopic model object to be compared.
+        vectors_1 (pd.Series): The chat vectors used to create the topic vectors for the first model.
+        metrics_model_2 (Dict[str, float]): A dictionary containing the evaluation metrics for the second model.
+        topics_model_2 (List[int]): A list of topic assignments for the documents in the second model.
+        propabilities_model_2 (List[float]): A list of probabilities associated with the topics for the second model.
+        model_2 (BERTopic): The second BERTopic model object to be compared.
+        vectors_2 (pd.Series): The chat vectors used to create the topic vectors for the second model.
+
+    Raises:
+        ValueError: Raised if both models perform equally well.
+
+    Returns:
+        List[int]: The topics assigned by the more favourable of the two BERTopic models.
+        List[float]: The probabilities for each document's topic assignment by the more favourable of the two BERTopic models.
+        BERTopic: The more favourable of the two BERTopic models.
+        Dict[str, float]: A dictionary containing the evaluation metrics for the more favourable of the two BERTopic models.
+        pd.Series: The chat vectors used to create the topic vectors for the more favourable of the two BERTopic models.
+    """
+
+    score_model_1 = 0
+    score_model_2 = 0
+    
+    if metrics_model_1["avg_coherence_scores"] < metrics_model_2["avg_coherence_scores"]:
+        score_model_1 += 1
+    else:
+        score_model_2 += 1
+        
+    if metrics_model_1["avg_silhouette_scores"] > metrics_model_2["avg_silhouette_scores"]:
+        score_model_1 += 1
+    else:
+        score_model_2 += 1
+        
+    if metrics_model_1["avg_davies_bouldin_scores"] < metrics_model_2["avg_davies_bouldin_scores"]:
+        score_model_1 += 1
+    else:
+        score_model_2 += 1
+        
+    if metrics_model_1["avg_noise_counts"] < metrics_model_2["avg_noise_counts"]:
+        score_model_1 += 1
+    else:
+        score_model_2 += 1
+        
+    if score_model_1 > score_model_2:
+        print("Model 1 is better based on the evaluated metrics.")
+        return topics_model_1, propabilities_model_1, model_1, metrics_model_1, vectors_1
+    
+    elif score_model_2 > score_model_1:
+        print("Model 2 is better based on the evaluated metrics.")
+        return topics_model_2, propabilities_model_2, model_2, metrics_model_2, vectors_2
+    
+    else:
+        raise ValueError("Both models are equally good based on the evaluated metrics.")
