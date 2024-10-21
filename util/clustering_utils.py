@@ -493,7 +493,6 @@ def get_representative_texts(df: pd.DataFrame,
             topic_msgs["similarity"] = topic_msgs.apply(lambda x: calculate_similarity_with_structural_info(x, topic_vector, text_embeddings_column, structural_embedding_chat_map), axis=1)
             print_log("calculate_similarity_with_structural_info", "Add Structural Information to Message Embeddings & Compare to Topic Vector", f"Completed ✓")
         else:
-            print("Here 2")
             topic_msgs["similarity"] = topic_msgs.apply(lambda x: calculate_similarity(x, topic_vector, text_embeddings_column), axis=1)
             print_log("calculate_similarity_with_structural_info", "Compare Message Vectors to Topic Vector", f"Completed ✓")
 
@@ -659,6 +658,7 @@ def is_processed(feature_name: str, webpreview: bool = False) -> bool:
     
     if webpreview:
         webpreview_path = os.path.join(dir_path, f"representative_webpreviews.json")
+        print(f"Representative Web Previews exist: {os.path.exists(webpreview_path)}")
         return all(os.path.exists(path) for path in [model_path, eval_path, messages_path, webpreview_path])
     else:
         return all(os.path.exists(path) for path in [model_path, eval_path, messages_path])
