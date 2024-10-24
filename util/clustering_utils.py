@@ -273,9 +273,17 @@ def run_experiment(
     evaluation_matrix = np.stack([coherence_scores, silhouette_scores, davies_bouldin_scores, topic_counts, noise_counts])
     average_value_vector = np.array([avg_coherence_scores, avg_silhouette_scores, avg_davies_bouldin_scores, avg_topic_counts, avg_noise_counts])
     average_value_vector = average_value_vector[:, np.newaxis]
+    
+    # normalize the evaluation matrix using z-score normalization to avoid metrics like the noise count and having a disproportionate influence
+    means = np.mean(evaluation_matrix, axis=1, keepdims=True)
+    stds = np.std(evaluation_matrix, axis=1, keepdims=True)
+    normalized_evaluation_matrix = (evaluation_matrix - means) / stds
 
+    # normalize the average vector
+    normalized_average_value_vector = (average_value_vector - means) / stds
+        
     # find the model with the smallest difference to the average evaluation metrics
-    differences = np.abs(evaluation_matrix - average_value_vector)
+    differences = np.abs(normalized_evaluation_matrix - normalized_average_value_vector)
     smallest_diff_idx = np.argmin(np.sum(differences, axis=0))
     
     # load the model with the smallest difference to the average evaluation metrics
@@ -602,39 +610,72 @@ def compare_averages(metrics_model_1: Dict[str, float],
         pd.Series: The chat vectors used to create the topic vectors for the more favourable of the two BERTopic models.
     """
 
-    score_model_1 = 0
-    score_model_2 = 0
+    # score_model_1 = 0
+    # score_model_2 = 0
     
-    if metrics_model_1["avg_coherence_scores"] < metrics_model_2["avg_coherence_scores"]:
-        score_model_1 += 1
-    else:
-        score_model_2 += 1
+    # if metrics_model_1["avg_coherence_scores"] < metrics_model_2["avg_coherence_scores"]:
+    #     score_model_1 += 1
+    # else:
+    #     score_model_2 += 1
         
-    if metrics_model_1["avg_silhouette_scores"] > metrics_model_2["avg_silhouette_scores"]:
-        score_model_1 += 1
-    else:
-        score_model_2 += 1
+    # if metrics_model_1["avg_silhouette_scores"] > metrics_model_2["avg_silhouette_scores"]:
+    #     score_model_1 += 1
+    # else:
+    #     score_model_2 += 1
         
-    if metrics_model_1["avg_davies_bouldin_scores"] < metrics_model_2["avg_davies_bouldin_scores"]:
-        score_model_1 += 1
-    else:
-        score_model_2 += 1
+    # if metrics_model_1["avg_davies_bouldin_scores"] < metrics_model_2["avg_davies_bouldin_scores"]:
+    #     score_model_1 += 1
+    # else:
+    #     score_model_2 += 1
         
-    if metrics_model_1["avg_noise_counts"] < metrics_model_2["avg_noise_counts"]:
-        score_model_1 += 1
-    else:
-        score_model_2 += 1
+    # if metrics_model_1["avg_noise_counts"] < metrics_model_2["avg_noise_counts"]:
+    #     score_model_1 += 1
+    # else:
+    #     score_model_2 += 1
         
-    if score_model_1 > score_model_2:
+    # if score_model_1 > score_model_2:
+    #     print("Model 1 is better based on the evaluated metrics.")
+    #     return topics_model_1, propabilities_model_1, model_1, metrics_model_1, vectors_1
+    
+    # elif score_model_2 > score_model_1:
+    #     print("Model 2 is better based on the evaluated metrics.")
+    #     return topics_model_2, propabilities_model_2, model_2, metrics_model_2, vectors_2
+    
+    # else:
+    #     raise ValueError("Both models are equally good based on the evaluated metrics.")
+    
+    # get the evaluation metrics for both models
+    
+    model_1_metrics = np.array([metrics_model_1["avg_coherence_scores"],
+                                metrics_model_1["avg_silhouette_scores"],
+                                -metrics_model_1["avg_davies_bouldin_scores"],  # smaller is better, so take negative
+                                -metrics_model_1["avg_noise_counts"]])      
+
+    model_2_metrics = np.array([metrics_model_2["avg_coherence_scores"],
+                                metrics_model_2["avg_silhouette_scores"],
+                                -metrics_model_2["avg_davies_bouldin_scores"],
+                                -metrics_model_2["avg_noise_counts"]])
+
+    # normalize the evaluation metrics using z-score normalization and prepare for comparison
+    combined_metrics = np.stack([model_1_metrics, model_2_metrics])
+    means = np.mean(combined_metrics, axis=0)
+    stds = np.std(combined_metrics, axis=0)
+    
+    normalized_model_1_metrics = (model_1_metrics - means) / stds
+    normalized_model_2_metrics = (model_2_metrics - means) / stds
+
+    # compare the total difference between the models
+    difference_1 = np.sum(np.abs(normalized_model_1_metrics))
+    difference_2 = np.sum(np.abs(normalized_model_2_metrics))
+    if difference_1 < difference_2:
         print("Model 1 is better based on the evaluated metrics.")
         return topics_model_1, propabilities_model_1, model_1, metrics_model_1, vectors_1
-    
-    elif score_model_2 > score_model_1:
+    elif difference_2 < difference_1:
         print("Model 2 is better based on the evaluated metrics.")
         return topics_model_2, propabilities_model_2, model_2, metrics_model_2, vectors_2
-    
     else:
         raise ValueError("Both models are equally good based on the evaluated metrics.")
+    
     
 def is_processed(feature_name: str, webpreview: bool = False) -> bool:
     """
