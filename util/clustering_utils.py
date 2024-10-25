@@ -13,6 +13,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from bertopic.representation import KeyBERTInspired
 from sentence_transformers import SentenceTransformer
 import json
+import plotly.graph_objects as go
 
 
 def load_emoji_list(file_paths: list[str]) -> list[str]:
@@ -741,3 +742,121 @@ def load_data(feature_name: str, webpreview: bool = False) -> Tuple[Dict[str, fl
     
     else:
         return evaluation_metrics, topic_model, representative_messages, None
+
+def create_flow_matrix(source_feature_name: str, target_feature_name: str, source_topics: np.array, target_topics: np.array) -> pd.DataFrame:
+    """
+    Create a flow matrix representing the number of instances changing from source topic assignments to target topics assignments.
+    
+    Parameters:
+        source_feature_name (str): name of the feature used to create the source topic assignment
+        target_feature_name (str): name of the feature used to create the target topic assignment
+        source_topics (np.array): array containing the topic assignments from the source model
+        target_topics (np.array): array containing the topic assignments from the target model
+
+    Returns:
+        pd.DataFrame: DataFrame where rows correspond to source topics and columns correspond to target topics.
+                      Each cell represents the count of instances changing from a source- to a target-topic-assignment.    
+    """
+    # Ensure both topic arrays are the same length
+    assert len(source_topics) == len(target_topics)
+    
+    # Get unique topic IDs and sort them for consistency in indexing
+    source_topics_ids = sorted(list(set(source_topics)))
+    target_topics_ids = sorted(list(set(target_topics)))
+    
+    # Initialize the flow matrix as a DataFrame for labeled rows and columns
+    flow_matrix = pd.DataFrame(0, index=source_topics_ids, columns=target_topics_ids)
+    
+    # Populate the flow matrix by counting transitions from source to target topics
+    for source, target in zip(source_topics, target_topics):
+        flow_matrix.loc[source, target] += 1
+            
+    return flow_matrix
+
+def create_sankey_input(source_feature_name: str, target_feature_name: str, source_topics: np.array, target_topics: np.array) -> Tuple[List[int], List[int], List[int]]:
+    """Prepare input data for a Sankey diagram
+
+    Parameters:
+        source_feature_name (str): name of the feature used to create the source topic assignment
+        target_feature_name (str): name of the feature used to create the target topic assignment
+        source_topics (np.array): array containing the topic assignments from the source model
+        target_topics (np.array): array containing the topic assignments from the target model
+
+    Returns:
+        Tuple[List[int], List[int], List[int]]: Three lists representing the transitions for a Sankey plot:
+            - "labels": list of source and target topic labels.
+            - "source": list of source topic indices.
+            - "target": list of target topic indices.
+            - "value": list of counts of instances changing from a source topic assignment to a target topic assignment. Zero values are omitted.
+
+    """
+    
+    flow_matrix = create_flow_matrix(source_feature_name, target_feature_name, source_topics, target_topics)
+    
+    source = []
+    target = []
+    value = []
+    
+    source_topic_ids = flow_matrix.index
+    target_topic_ids = flow_matrix.columns
+    labels = [f"{source_feature_name}_{topic_id}" for topic_id in source_topic_ids] + [f"{target_feature_name}_{topic_id}" for topic_id in target_topic_ids]
+
+    for source_topic in flow_matrix.index:
+        for target_topic in flow_matrix.columns:
+            if flow_matrix.loc[source_topic, target_topic] > 0:
+                 # get index of the labels corresponding to the source and target topics
+                source.append(labels.index(f"{source_feature_name}_{source_topic}")) 
+                target.append(labels.index(f"{target_feature_name}_{target_topic}")) 
+                value.append(flow_matrix.loc[source_topic, target_topic])
+                
+    return labels, source, target, value
+
+
+def plot_topic_changes(source_feature_name: str, target_feature_name: str, source_topics: np.array, target_topics: np.array) -> go.Figure:
+    """ Create a Sankey diagram visualizing the changes in topic assignments between two models based on different features.
+
+    Args:
+        source_feature_name (str): name of the feature used to create the source topic assignment
+        target_feature_name (str): name of the feature used to create the target topic assignment
+        source_topics (np.array): array containing the topic assignments from the source model
+        target_topics (np.array): array containing the topic assignments from the target model
+        
+    Returns:
+        fig: Plotly figure object displaying the Sankey diagram
+    
+    """
+    
+    labels, source, target, value = create_sankey_input(source_feature_name, target_feature_name, source_topics, target_topics)
+    
+    max_value = max(value) if value else 1  
+    min_alpha = 0.1  
+    colors = [f'rgba(50, 50, 50, {max(min_alpha, v / (max_value + 100))})' for v in value]  
+
+    fig = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=labels,
+            color="lightgrey"
+        ),
+        link=dict(
+            source=source,
+            target=target,
+            value=value,
+            color=colors,  
+        )
+    )])
+
+    fig.update_layout(
+        title_text=f"Topic Assignment Changes between the Clusterings based on {source_feature_name} Feature and {target_feature_name} Feature",
+        title_x=0.5,
+        title_font_size=15, 
+        font=dict(size=12), 
+        paper_bgcolor='rgba(240, 240, 240, 1)', 
+        plot_bgcolor='rgba(255, 255, 255, 1)', 
+        margin=dict(l=40, r=40, t=40, b=40),  
+    )
+
+    # return the figure 
+    return fig
