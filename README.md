@@ -39,16 +39,25 @@ The experiment itself is structured into two parts:
     ```
 
 3. **Install the necessary dependencies for each notebook**:
+
+    Make sure you have Anaconda or Miniconda installed.
+
+    Afterwards, you can run the following commands to create the environments for the different notebooks.
     
     For 01_data_cleaning_and_exploration.ipynb:
     ```bash
-    pip install -r requirements.txt
+    conda create --name <env> --file <requirements_1.txt>
     ```
 
-    For 02_feature_engineering_and_clustering.ipynb:
+    For 02_feature_engineering.ipynb:
     ```bash
-    pip install -r requirements_2.txt
-    ```    
+    conda create --name <env> --file <requirements_2.txt>
+    ```
+
+    For 03_clustering.ipynb:
+    ```bash
+    conda create --name <env> --file <requirements_3.txt>
+    ```            
 
     Using Python 3.12.4 and seperate environments for each notebook is recommended.
 
