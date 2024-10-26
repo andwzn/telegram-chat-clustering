@@ -888,7 +888,7 @@ def plot_topic_changes(source_feature_name: str, target_feature_name: str, sourc
     )])
 
     fig.update_layout(
-        title_text=f"Topic Assignment Changes between the Clusterings based on {source_feature_name} Feature and {target_feature_name} Feature",
+        title_text=f"Topic Assignment Changes between the Clusterings based on the {source_feature_name}- and the {target_feature_name} Feature",
         title_x=0.5,
         title_font_size=15, 
         font=dict(size=12), 
