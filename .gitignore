@@ -6,14 +6,7 @@ data/preprocessed/*
 features/*
 top_duplicate_chats.txt
 tmp/*
-auxiliary/*
 results/*
-
-# internal stuff
-TODO
-
-#WIP
-03_data_cleaning_and_exploration_multiple_dfs.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
