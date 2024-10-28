@@ -35,6 +35,8 @@ The project is organized into the following directories:
 
 - `util`: Holds scripts used in the project.
 
+- `requirements`: Requirements of the conda envs for each notebook.
+
 
 ## Experiment Structure
 
@@ -92,7 +94,7 @@ The experiment itself is structured into two parts:
     conda create --name <env> --file <requirements_3.txt>
     ```            
 
-    Using Python 3.12.4 and seperate environments for each notebook is recommended.
+    Using Python 3.12.4 and seperate environments for each notebook is recommended. The text-files can be found in the `requirements` directory.
 
 
 4. **Add the data:**
