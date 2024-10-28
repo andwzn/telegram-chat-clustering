@@ -440,39 +440,43 @@ def get_representative_texts(df: pd.DataFrame,
     return top_topic_messages
 
 
-def create_topic_visualisations(topic_model: BERTopic, embeddings: pd.Series, texts_aggregations: pd.Series, path: str) -> None:
+def create_topic_visualisations(topic_model: BERTopic, embeddings: pd.Series, texts_aggregations: pd.Series, path: str, display_plots=True) -> None:
     """
     Visualize and save the topics and documents of a BERTopic model using a UMAP plot, a bar chart of keywords, and a hierarchical topic visualization.
-    Export them as png files.
+    Export them as png files. Optionally display the plots.
 
     Args:
         topic_model (BERTopic): the topic model
         embeddings (pd.Series): the embeddings used to create the topic model
         texts_aggregations (pd.Series): text aggregations of the documents used to create the topic model
         path (str): the dir to save the visualizations to
+        display_plots(bool): Optional; if True, displays the plots. Default is True.
     """
     
-    print("Topic Map:")
     docs = texts_aggregations.tolist()
     embeddings = np.vstack(embeddings)
     reduced_embeddings = UMAP(n_neighbors=10, n_components=2, min_dist=0.0, metric="cosine").fit_transform(embeddings)
     doc_viz = topic_model.visualize_documents(docs, reduced_embeddings=reduced_embeddings)
     map_path = os.path.join(path, "topic_map.png")
     doc_viz.write_image(map_path, scale=2)
-    doc_viz.show()
-
-    print("Bar Chart, displaying the top 13 topics and top 20 words per topic:")
+    print_log("create_topic_visualisations", "Create UMAP Plot", "Completed ✓")
+    
     bar_viz = topic_model.visualize_barchart(top_n_topics=13, n_words=20)
     bar_path = os.path.join(path, "topic_barchart.png")
     bar_viz.write_image(bar_path, scale=2)
-    bar_viz.show()
+    print_log("create_topic_visualisations", "Create Topic Barchart", "Completed ✓")
 
-    print("Hierarchical Topics:")
     hierarchical_topics = topic_model.hierarchical_topics(texts_aggregations)
     hierarchy_viz = topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
     h_path = os.path.join(path, "topic_hierarchy.png")
     hierarchy_viz.write_image(h_path, scale=2)
-    hierarchy_viz.show()
+    print_log("create_topic_visualisations", "Create Topic Hierarchy", "Completed ✓")
+    
+    if display_plots:
+        doc_viz.show()
+        hierarchy_viz.show()
+        bar_viz.show()
+
 
     
 def create_topic_vectors(topic_model: BERTopic, chat_vectors: pd.Series) -> pd.Series:
