@@ -1,13 +1,39 @@
 # Telegram Chat Clustering
 
+This project explores novel approaches to clustering Telegram chats by evaluating various features derived from message references. 
+
 ## Directory Structure
 
 The project is organized into the following directories:
 
-- `data`: Contains the datasets used for the analysis.
-- `results`: Stores the outputs and results of the analysis.
-- `notebook`: Includes Jupyter notebooks for different parts of the analysis.
-- `util`: Holds additional scripts used in the project.
+- `data`: Contains the datasets used for the analysis (e.g., auxiliary data, CSV files, preprocessed data, and models).
+
+    - `auxiliary`: Contains auxiliary data
+    - `csv`: Contains the raw and cleaned data as csv files.
+    - `dbs`: Contains the data in a sqlite db (if provided).
+    - `models`: Contains models used in the experiment.
+    - `preprocessed`: Contains preprocessed data used for feature engineering and clustering.
+
+- `results`: Stores outputs and results of the analysis.
+    - `base_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from aggregated message embeddings.
+    - `filtered_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from aggregated message embeddings, with original/forwarded pairs removed.
+
+    - `log_combined_structural_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from aggregated message embeddings and structural embeddings normalized with the log function.
+    - `onehot_combined_structural_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from aggregated message embeddings and structural embeddings encoded with one-hot encoding.
+    - `combined_structural_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from aggregated message embeddings and structural embeddings that produced favorable results in pretrials.
+
+    - `log_structural_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from structural embeddings normalized with the log function.
+    - `onehot_structural_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from structural embeddings encoded with one-hot encoding.
+    - `structural_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from structural embeddings that produced favorable results in pretrials.
+
+    - `webpreview_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from aggregated web preview embeddings.
+    - `combined_webpreview_embeddings`: Contains keywords, representative texts, visualizations, and the topic model created by applying BERTopic to chat representations generated from combined message and web preview embeddings.
+
+    - `comparison`: Contains evaluation metrics and visualizations for all clusterings.
+
+- `notebook`: Includes jupyter notebooks for different steps of the project.
+
+- `util`: Holds scripts used in the project.
 
 
 ## Experiment Structure
@@ -20,11 +46,18 @@ The experiment itself is structured into two parts:
 
 - The code for this part can be found in the `01_data_cleaning_and_exploration` notebook.
 
-### 2. Feature Engineering and Clustering
+### 2. Feature Engineering 
 
-- TBD
+- This part focuses on creating various chat representations based on different types of references in the dataset.
 
 - The code for this part will be provided in the `02_feature_engineering_and_clustering` notebook.
+
+### 3. Clustering
+
+- The final part includes clustering and evaluation of these features.
+
+- The code for this part will be provided in the `03_clustering` notebook.
+
 
 ## Quickstart
 
@@ -86,9 +119,10 @@ The experiment itself is structured into two parts:
         cd <project-directory>
         ```
 
-    3. **Run the following command:**
+    3. **Run one of the following commands (depending on your setup):**
         ```sh
         python3 -m util.export_msg_from_db
+        python -m util.export_msg_from_db
         ```
 
 - Please note that this process might take some time depending on the size of the databases. It also only works with dbs created using TeleVision.
