@@ -1,6 +1,6 @@
 # Telegram Chat Clustering
 
-This project explores novel approaches to clustering Telegram chats by evaluating various features derived from referenced made by Telegram messages. 
+This project explores novel approaches to clustering Telegram chats by evaluating various features derived from referenced made in Telegram messages. 
 
 ## Directory Structure
 
