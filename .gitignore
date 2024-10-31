@@ -6,7 +6,13 @@ data/preprocessed/*
 features/*
 top_duplicate_chats.txt
 tmp/*
-results/*
+results/base_embeddings/topic_models/*
+results/combined_structural_embeddings/topic_models/*
+results/combined_webpreview_embeddings/topic_models/*
+results/filtered_embeddings/topic_models/*
+results/structural_embeddings/topic_models/*
+results/webpreview_embeddings/topic_models/*
+conda_envs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

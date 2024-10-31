@@ -40,7 +40,7 @@ The project is organized into the following directories:
 
 ## Experiment Structure
 
-The experiment itself is structured into two parts:
+The experiment itself is structured into three parts:
 
 ### 1. Data Exploration and Cleaning
 
@@ -93,6 +93,8 @@ The experiment itself is structured into two parts:
     ```bash
     conda create --name <env> --file <requirements_3.txt>
     ```            
+
+    If provided, you can also use the envs in the  `conda_envs`directory.
 
     Using Python 3.12.4 and seperate environments for each notebook is recommended. The text-files can be found in the `requirements` directory.
 
