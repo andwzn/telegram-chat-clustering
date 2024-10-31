@@ -16,7 +16,6 @@ results/log_combined_structural_embeddings/*
 results/log_structural_embeddings/*
 results/onehot_combined_structural_embeddings/*
 results/onehot_structural_embeddings/*
-conda_envs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
