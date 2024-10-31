@@ -1,0 +1,7 @@
+{
+    "avg_coherence_scores": 0.4595140194572657,
+    "avg_silhouette_scores": 0.14638398678420722,
+    "avg_davies_bouldin_scores": 2.1003440353729665,
+    "avg_topic_counts": 3.76,
+    "avg_noise_counts": 11.0
+}
