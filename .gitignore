@@ -14,8 +14,8 @@ results/structural_embeddings/topic_models/*
 results/webpreview_embeddings/topic_models/*
 results/log_combined_structural_embeddings/*
 results/log_structural_embeddings/*
-results/one_hot_combined_structural_embeddings/*
-results/one_hot_structural_embeddings/*
+results/onehot_combined_structural_embeddings/*
+results/onehot_structural_embeddings/*
 conda_envs/*
 
 # Byte-compiled / optimized / DLL files
